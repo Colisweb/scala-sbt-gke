@@ -2,7 +2,7 @@ FROM hseeberger/scala-sbt:8u141-jdk_2.12.3_0.13.16
 
 MAINTAINER Colisweb
 
-RUN apt-get update && install -y lsb-release build-essential apt-transport-https ca-certificates curl gnupg2 software-properties-common
+RUN apt-get update && apt-get install -y lsb-release build-essential apt-transport-https ca-certificates curl gnupg2 software-properties-common
 
 # GCloud
 ## Create an environment variable for the correct distribution
