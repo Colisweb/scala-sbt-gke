@@ -26,5 +26,3 @@ RUN apt-get remove -y docker docker-engine docker.io
 RUN apt-get install -y moreutils python-pip jq google-cloud-sdk kubectl docker-ce
 RUN pip install --upgrade pip
 RUN pip install yq
-
-CMD echo "finished"
