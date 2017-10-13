@@ -1,7 +1,5 @@
 FROM hseeberger/scala-sbt:8u141-jdk_2.12.3_0.13.16
 
-MAINTAINER Jules Ivanic
-
 RUN \
     apt-get update && \
     apt-get install -y lsb-release build-essential apt-transport-https ca-certificates curl gnupg2 software-properties-common
