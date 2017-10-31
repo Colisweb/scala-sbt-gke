@@ -30,3 +30,9 @@ RUN \
     apt-get install -y moreutils python-pip jq google-cloud-sdk kubectl docker-ce && \
     pip install --upgrade pip && \
     pip install yq
+
+# Helm
+RUN \
+    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && \
+    chmod 700 get_helm.sh && \
+    ./get_helm.sh
