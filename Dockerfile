@@ -16,7 +16,7 @@ RUN \
 # NodeJS
 RUN \
     curl -L https://git.io/n-install | bash -s -- -y && \
-    /root/n/bin/n 8.5.0
+    /root/n/bin/n 8.9.0
 
 # Docker
 RUN \
