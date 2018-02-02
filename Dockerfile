@@ -2,6 +2,7 @@ FROM hseeberger/scala-sbt:8u151-2.12.4-1.1.0
 
 RUN \
     apt-get update && \
+    apt-get dist-upgrade -y && \
     apt-get install -y lsb-release build-essential apt-transport-https ca-certificates curl gnupg2 software-properties-common
 
 # GCloud
