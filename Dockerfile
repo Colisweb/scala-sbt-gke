@@ -1,4 +1,4 @@
-FROM hseeberger/scala-sbt:8u141-jdk_2.12.3_0.13.16
+FROM hseeberger/scala-sbt:8u151-2.12.4-1.1.0
 
 RUN \
     apt-get update && \
