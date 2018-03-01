@@ -19,18 +19,17 @@ RUN \
     curl -L https://git.io/n-install | bash -s -- -y && \
     /root/n/bin/n 8.9.0
 
-# Docker
+# Docker && Google Cloud CLI && Kubernetes CLI
 RUN \
     curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
     apt-key fingerprint 0EBFCD88 && \
-    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
-
-RUN \
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
     apt-get update && \
     apt-get remove -y docker docker-engine docker.io && \
     apt-get install -y moreutils python-pip jq google-cloud-sdk kubectl docker-ce && \
     pip install --upgrade pip && \
-    pip install yq
+    pip install yq && \
+    usermod -aG docker root
 
 # Helm
 RUN \
