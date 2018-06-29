@@ -2,7 +2,7 @@
 FROM node:10.5.0-alpine
 # easier to install jdk than node !
 
-ENV sbt_version="1.1.6" sbt_home="/usr/local/sbt" PATH="${PATH}:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/sbt/bin" LANG="C.UTF-8" JAVA_HOME="/usr/lib/jvm/java-1.8-openjdk" JAVA_VERSION="8u171" JAVA_ALPINE_VERSION="8.171.11-r0"
+ENV sbt_version="1.1.6" sbt_home="/usr/local/sbt" PATH="${PATH}:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/sbt/bin:/google-cloud-sdk/bin" LANG="C.UTF-8" JAVA_HOME="/usr/lib/jvm/java-1.8-openjdk" JAVA_VERSION="8u171" JAVA_ALPINE_VERSION="8.171.11-r0" KUBE_LATEST_VERSION="v1.10.2" HELM_VERSION="v2.9.1" CLOUD_SDK_VERSION="206.0.0"
 
 # install openjdk https://github.com/docker-library/openjdk/blob/dd54ae37bc44d19ecb5be702d36d664fed2c68e4/8/jdk/alpine/Dockerfile
 # add a simple script that can auto-detect the appropriate JAVA_HOME value
@@ -28,10 +28,7 @@ RUN apk --no-cache --update add bash curl wget make git && mkdir -p "$sbt_home" 
     apk del wget && \
     sbt sbtVersion
 
-# Google Cloud SDK
-ENV CLOUD_SDK_VERSION 206.0.0
-
-ENV PATH /google-cloud-sdk/bin:$PATH
+# Google Cloud SDK https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/206.0.0/alpine/Dockerfile
 RUN apk --no-cache add \
         curl \
         python \
@@ -48,19 +45,17 @@ RUN apk --no-cache add \
     gcloud --version
 
 # Kubectl https://github.com/dtzar/helm-kubectl/blob/master/Dockerfile
-
-# Note: Latest version of kubectl may be found at:
-# https://aur.archlinux.org/packages/kubectl-bin/
-ENV KUBE_LATEST_VERSION="v1.10.2"
-# Note: Latest version of helm may be found at:
-# https://github.com/kubernetes/helm/releases
-ENV HELM_VERSION="v2.9.1"
-
 RUN apk add --no-cache ca-certificates bash git \
     && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl \
     && wget -q http://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
     && chmod +x /usr/local/bin/helm
 
+
+# install docker client
+RUN mkdir -p /tmp/download \
+    && curl -L https://download.docker.com/linux/static/stable/x86_64/docker-18.03.1-ce.tgz  | tar -xz -C /tmp/download \
+    && mv /tmp/download/docker/docker /usr/local/bin/ \
+    && rm -rf /tmp/download
 
 CMD bash
