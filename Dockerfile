@@ -24,11 +24,7 @@ RUN apk --no-cache --update add bash curl wget make git && mkdir -p "$sbt_home" 
     wget -q --no-check-certificate -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub && \
     wget -q --no-check-certificate https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.25-r0/glibc-2.25-r0.apk && apk add glibc-2.25-r0.apk && rm glibc-2.25-r0.apk && \
     wget -qO - --no-check-certificate "https://github.com/sbt/sbt/releases/download/v$sbt_version/sbt-$sbt_version.tgz" | tar xz -C $sbt_home --strip-components=1 && \
-    apk del wget && \
     sbt sbtVersion
-
-# install gcc and g++ for bs-platform (OCaml compiler)
-RUN apk --no-cache add gcc musl-dev g++
 
 # Google Cloud SDK https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/206.0.0/alpine/Dockerfile
 RUN apk --no-cache add \
@@ -48,9 +44,9 @@ RUN apk --no-cache add \
 
 # Kubectl https://github.com/dtzar/helm-kubectl/blob/master/Dockerfile
 RUN apk add --no-cache ca-certificates bash git \
-    && wget -q https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
+    && wget -q --no-check-certificate https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl \
-    && wget -q http://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
+    && wget -q --no-check-certificate http://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
     && chmod +x /usr/local/bin/helm
 
 
@@ -61,3 +57,6 @@ RUN mkdir -p /tmp/download \
     && rm -rf /tmp/download
 
 CMD bash
+# install gcc and g++ for bs-platform (OCaml compiler)
+RUN apk --no-cache add gcc musl-dev g++
+
