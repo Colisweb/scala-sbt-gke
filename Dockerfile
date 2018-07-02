@@ -1,5 +1,4 @@
-#FROM openjdk:8u171-jdk-alpine3.7
-FROM node:10.5.0-alpine
+FROM node:8.11.3-alpine
 # easier to install jdk than node !
 
 ENV sbt_version="1.1.6" sbt_home="/usr/local/sbt" PATH="${PATH}:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/sbt/bin:/google-cloud-sdk/bin" LANG="C.UTF-8" JAVA_HOME="/usr/lib/jvm/java-1.8-openjdk" JAVA_VERSION="8u171" JAVA_ALPINE_VERSION="8.171.11-r0" KUBE_LATEST_VERSION="v1.10.2" HELM_VERSION="v2.9.1" CLOUD_SDK_VERSION="206.0.0"
@@ -27,6 +26,9 @@ RUN apk --no-cache --update add bash curl wget make git && mkdir -p "$sbt_home" 
     wget -qO - --no-check-certificate "https://github.com/sbt/sbt/releases/download/v$sbt_version/sbt-$sbt_version.tgz" | tar xz -C $sbt_home --strip-components=1 && \
     apk del wget && \
     sbt sbtVersion
+
+# install gcc and g++ for bs-platform (OCaml compiler)
+RUN apk --no-cache add gcc musl-dev g++
 
 # Google Cloud SDK https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/206.0.0/alpine/Dockerfile
 RUN apk --no-cache add \
