@@ -56,7 +56,8 @@ RUN mkdir -p /tmp/download \
     && mv /tmp/download/docker/docker /usr/local/bin/ \
     && rm -rf /tmp/download
 
-CMD bash
+# git-secret
 # install gcc and g++ for bs-platform (OCaml compiler)
-RUN apk --no-cache add gcc musl-dev g++
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && apk --no-cache add git-secret gcc musl-dev g++
 
+CMD bash
