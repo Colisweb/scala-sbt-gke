@@ -58,6 +58,12 @@ RUN mkdir -p /tmp/download \
 
 # git-secret
 # install gcc and g++ for bs-platform (OCaml compiler)
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && apk --no-cache add git-secret gcc musl-dev g++
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" \
+      >> /etc/apk/repositories && \
+ apk --no-cache add gawk gcc musl-dev g++ gnupg && \
+ git clone https://github.com/sobolevn/git-secret.git /tmp/git-secret --branch v0.2.3 && \
+ cd /tmp/git-secret && make build && PREFIX="/usr/local" make install && \
+ cd /tmp && rm -rf git-secret
+
 
 CMD bash
