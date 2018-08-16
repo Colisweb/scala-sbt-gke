@@ -36,12 +36,7 @@ RUN apk --no-cache --update add bash curl wget make git && mkdir -p "$sbt_home" 
     sbt sbtVersion
 
 # Google Cloud SDK https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/206.0.0/alpine/Dockerfile
-RUN apk --no-cache add \
-        curl \
-        python \
-        py-crcmod \
-        bash \
-        git \
+RUN apk --no-cache add curl python py-crcmod bash git \
     && curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     tar xzf google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
     rm google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
