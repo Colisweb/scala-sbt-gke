@@ -6,11 +6,12 @@ ENV LANG="C.UTF-8" \
     NODE_VERSION="8.11.3"
 
 RUN \
+    ruby -v && \
     apt-get update && \
     apt-get dist-upgrade -y && \
     apt-get install --no-install-recommends -y \
-    apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https \
-    ca-certificates curl gnupg2 software-properties-common git ssh tar wget gawk gcc g++ default-libmysqlclient-dev
+        apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https ca-certificates curl \
+        gnupg2 software-properties-common git ssh tar wget gawk gcc g++ default-libmysqlclient-dev ruby-mysql2
 
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
