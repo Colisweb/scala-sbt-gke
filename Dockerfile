@@ -1,18 +1,27 @@
 FROM node:8.11.3-alpine
 # easier to install jdk than node !
 
-ENV sbt_version="1.1.6" sbt_home="/usr/local/sbt" PATH="${PATH}:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/sbt/bin:/google-cloud-sdk/bin" LANG="C.UTF-8" JAVA_HOME="/usr/lib/jvm/java-1.8-openjdk" JAVA_VERSION="8u171" JAVA_ALPINE_VERSION="8.171.11-r0" KUBE_LATEST_VERSION="v1.10.2" HELM_VERSION="v2.9.1" CLOUD_SDK_VERSION="206.0.0"
+ENV sbt_version="1.1.6" \
+    sbt_home="/usr/local/sbt" \
+    PATH="${PATH}:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/sbt/bin:/google-cloud-sdk/bin" \
+    LANG="C.UTF-8" \
+    JAVA_HOME="/usr/lib/jvm/java-1.8-openjdk" \
+    JAVA_VERSION="8u171" \
+    JAVA_ALPINE_VERSION="8.171.11-r0" \
+    KUBE_LATEST_VERSION="v1.10.2" \
+    HELM_VERSION="v2.9.1" \
+    CLOUD_SDK_VERSION="206.0.0"
 
 # install openjdk https://github.com/docker-library/openjdk/blob/dd54ae37bc44d19ecb5be702d36d664fed2c68e4/8/jdk/alpine/Dockerfile
 # add a simple script that can auto-detect the appropriate JAVA_HOME value
 # based on whether the JDK or only the JRE is installed
 RUN { \
-  echo '#!/bin/sh'; \
-  echo 'set -e'; \
-  echo; \
-  echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
-} > /usr/local/bin/docker-java-home \
-&& chmod +x /usr/local/bin/docker-java-home
+      echo '#!/bin/sh'; \
+      echo 'set -e'; \
+      echo; \
+      echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
+    } > /usr/local/bin/docker-java-home \
+    && chmod +x /usr/local/bin/docker-java-home
 
 RUN set -x \
   && apk add --no-cache openjdk8="$JAVA_ALPINE_VERSION" \ 
@@ -58,8 +67,7 @@ RUN mkdir -p /tmp/download \
 
 # git-secret
 # install gcc and g++ for bs-platform (OCaml compiler)
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" \
-      >> /etc/apk/repositories && \
+RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
  apk --no-cache add gawk gcc musl-dev g++ gnupg && \
  git clone https://github.com/sobolevn/git-secret.git /tmp/git-secret --branch v0.2.3 && \
  cd /tmp/git-secret && make build && PREFIX="/usr/local" make install && \
