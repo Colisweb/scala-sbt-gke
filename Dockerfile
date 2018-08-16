@@ -56,7 +56,6 @@ RUN apk add --no-cache ca-certificates bash git \
     && wget -q --no-check-certificate http://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
     && chmod +x /usr/local/bin/helm
 
-
 # install docker client
 RUN mkdir -p /tmp/download \
     && curl -L https://download.docker.com/linux/static/stable/x86_64/docker-18.03.1-ce.tgz  | tar -xz -C /tmp/download \
