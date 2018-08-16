@@ -1,73 +1,77 @@
-FROM node:8.11.3-alpine
-# easier to install jdk than node !
+# ruby is hard to install because rvm doesn't work in Docker
+FROM ruby:2.3.7-slim-stretch
 
-ENV sbt_version="1.1.6" \
-    sbt_home="/usr/local/sbt" \
-    PATH="${PATH}:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/sbt/bin:/google-cloud-sdk/bin" \
-    LANG="C.UTF-8" \
-    JAVA_HOME="/usr/lib/jvm/java-1.8-openjdk" \
-    JAVA_VERSION="8u171" \
-    JAVA_ALPINE_VERSION="8.171.11-r0" \
-    KUBE_LATEST_VERSION="v1.10.2" \
-    HELM_VERSION="v2.9.1" \
-    CLOUD_SDK_VERSION="206.0.0"
+ENV LANG="C.UTF-8" \
+    SBT_VERSION="1.1.6" \
+    NODE_VERSION="8.11.3"
 
-# install openjdk https://github.com/docker-library/openjdk/blob/dd54ae37bc44d19ecb5be702d36d664fed2c68e4/8/jdk/alpine/Dockerfile
-# add a simple script that can auto-detect the appropriate JAVA_HOME value
-# based on whether the JDK or only the JRE is installed
-RUN { \
-      echo '#!/bin/sh'; \
-      echo 'set -e'; \
-      echo; \
-      echo 'dirname "$(dirname "$(readlink -f "$(which javac || which java)")")"'; \
-    } > /usr/local/bin/docker-java-home \
-    && chmod +x /usr/local/bin/docker-java-home
+RUN \
+    apt-get update && \
+    apt-get dist-upgrade -y && \
+    apt-get install --no-install-recommends -y \
+    apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https \
+    ca-certificates curl gnupg2 software-properties-common git ssh tar wget gawk gcc g++
 
-RUN set -x \
-  && apk add --no-cache openjdk8="$JAVA_ALPINE_VERSION" \ 
-  && [ "$JAVA_HOME" = "$(docker-java-home)" ]
+# sbt
+# Taken from https://github.com/hseeberger/docker-sbt
+RUN \
+    curl -L -o sbt-$SBT_VERSION.deb https://dl.bintray.com/sbt/debian/sbt-$SBT_VERSION.deb && \
+    dpkg -i sbt-$SBT_VERSION.deb && \
+    rm sbt-$SBT_VERSION.deb && \
+    apt-get update && \
+    apt-get install --no-install-recommends -y sbt
 
+# GCloud
+## Create an environment variable for the correct distribution
+RUN \
+    export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
+    ## Add the Cloud SDK distribution URI as a package source
+    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    ## Import the Google Cloud Platform public key
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 
-# install sbt: https://hub.docker.com/r/gafiatulin/alpine-sbt/~/dockerfile/
-RUN apk --no-cache --update add bash curl wget make git ca-certificates && \
-    mkdir -p "$sbt_home" && \
-    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://alpine-pkgs.sgerrand.com/sgerrand.rsa.pub && \
-    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.28-r0/glibc-2.28-r0.apk && \
-    apk add glibc-2.28-r0.apk && \
-    rm glibc-2.28-r0.apk && \
-    wget -qO - --no-check-certificate "https://github.com/sbt/sbt/releases/download/v$sbt_version/sbt-$sbt_version.tgz" | tar xz -C $sbt_home --strip-components=1 && \
-    sbt sbtVersion
+# NodeJS
+RUN \
+    curl -L https://git.io/n-install | bash -s -- -y && \
+    /root/n/bin/n $NODE_VERSION && \
+    node -v
 
-# Google Cloud SDK https://github.com/GoogleCloudPlatform/cloud-sdk-docker/blob/206.0.0/alpine/Dockerfile
-RUN apk --no-cache add curl python py-crcmod bash git \
-    && curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
-    tar xzf google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
-    rm google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz && \
-    ln -s /lib /lib64 && \
-    gcloud config set core/disable_usage_reporting true && \
-    gcloud config set component_manager/disable_update_check true && \
-    gcloud config set metrics/environment github_docker_image && \
-    gcloud --version
+# Docker && Google Cloud CLI && Kubernetes CLI
+RUN \
+    curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
+    apt-key fingerprint 0EBFCD88 && \
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
+    apt-get update && \
+    apt-get remove -y docker docker-engine docker.io && \
+    apt-get install --no-install-recommends -y moreutils jq google-cloud-sdk kubectl docker-ce && \
+    apt-get install -y python-pip && \
+    pip install yq && \
+    usermod -aG docker root
 
-# Kubectl https://github.com/dtzar/helm-kubectl/blob/master/Dockerfile
-RUN apk add --no-cache ca-certificates bash git \
-    && wget -q --no-check-certificate https://storage.googleapis.com/kubernetes-release/release/${KUBE_LATEST_VERSION}/bin/linux/amd64/kubectl -O /usr/local/bin/kubectl \
-    && chmod +x /usr/local/bin/kubectl \
-    && wget -q --no-check-certificate http://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz -O - | tar -xzO linux-amd64/helm > /usr/local/bin/helm \
-    && chmod +x /usr/local/bin/helm
+# Docker Compose
+RUN \
+    curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && \
+    chmod +x /usr/local/bin/docker-compose && \
+    docker-compose --version
 
-# install docker client
-RUN mkdir -p /tmp/download \
-    && curl -L https://download.docker.com/linux/static/stable/x86_64/docker-18.03.1-ce.tgz  | tar -xz -C /tmp/download \
-    && mv /tmp/download/docker/docker /usr/local/bin/ \
-    && rm -rf /tmp/download
+# Helm
+RUN \
+    curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > get_helm.sh && \
+    chmod 700 get_helm.sh && \
+    ./get_helm.sh
 
 # git-secret
-# install gcc and g++ for bs-platform (OCaml compiler)
-RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories && \
- apk --no-cache add gawk gcc musl-dev g++ gnupg && \
- git clone https://github.com/sobolevn/git-secret.git /tmp/git-secret --branch v0.2.3 && \
- cd /tmp/git-secret && make build && PREFIX="/usr/local" make install && \
- cd /tmp && rm -rf git-secret
+RUN \
+    echo "deb https://dl.bintray.com/sobolevn/deb git-secret main" | tee -a /etc/apt/sources.list && \
+    wget -qO - https://api.bintray.com/users/sobolevn/keys/gpg/public.key | apt-key add -  && \
+    apt-get update && \
+    apt-get install --no-install-recommends -y git-secret
+
+# Clean
+RUN \
+    apt-get purge -y python-pip apt-utils && \
+    apt-get autoremove -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 CMD bash
