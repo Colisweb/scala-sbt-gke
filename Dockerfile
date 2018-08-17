@@ -11,7 +11,7 @@ RUN \
     apt-get dist-upgrade -y && \
     apt-get install --no-install-recommends -y \
         apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https ca-certificates curl \
-        gnupg2 software-properties-common git ssh tar wget gawk gcc g++ default-libmysqlclient-dev ruby-mysql2
+        gnupg2 software-properties-common git ssh tar wget gawk gcc g++ default-libmysqlclient-dev ruby-mysql2 awscli
 
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
