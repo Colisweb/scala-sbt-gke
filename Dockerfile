@@ -5,15 +5,22 @@ ENV LANG="C.UTF-8" \
     SBT_VERSION="1.1.6" \
     NODE_VERSION="8.11.3" \
     GOPATH=$HOME/work \
-    PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
+    PATH=$PATH:/usr/local/go/bin:$HOME/work/bin
 
 RUN \
+    mkdir $HOME/work && \
     ruby -v && \
     apt-get update && \
     apt-get dist-upgrade -y && \
     apt-get install --no-install-recommends -y \
         apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https ca-certificates curl \
         gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 awscli golang-go make
+
+# https://github.com/awslabs/amazon-ecr-credential-helper
+# Required because of this: https://gitlab.com/gitlab-org/gitlab-runner/issues/1583
+#
+RUN go get -u github.com/awslabs/amazon-ecr-credential-helper/ecr-login/cli/docker-credential-ecr-login && \
+    docker-credential-ecr-login version
 
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
