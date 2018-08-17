@@ -3,7 +3,9 @@ FROM ruby:2.3.7-slim-stretch
 
 ENV LANG="C.UTF-8" \
     SBT_VERSION="1.1.6" \
-    NODE_VERSION="8.11.3"
+    NODE_VERSION="8.11.3" \
+    GOPATH=$HOME/work \
+    PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 
 RUN \
     ruby -v && \
@@ -11,7 +13,7 @@ RUN \
     apt-get dist-upgrade -y && \
     apt-get install --no-install-recommends -y \
         apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https ca-certificates curl \
-        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 awscli golang-go
+        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 awscli golang-go make
 
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
