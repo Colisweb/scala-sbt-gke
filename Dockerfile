@@ -20,7 +20,8 @@ RUN \
     dpkg -i sbt-$SBT_VERSION.deb && \
     rm sbt-$SBT_VERSION.deb && \
     apt-get update && \
-    apt-get install --no-install-recommends -y sbt
+    apt-get install --no-install-recommends -y sbt && \
+    sbt sbtVersion
 
 # GCloud
 ## Create an environment variable for the correct distribution
