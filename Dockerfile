@@ -16,12 +16,6 @@ RUN \
         apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https ca-certificates curl \
         gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 awscli golang-go make
 
-# https://github.com/awslabs/amazon-ecr-credential-helper
-# Required because of this: https://gitlab.com/gitlab-org/gitlab-runner/issues/1583
-#
-RUN go get -u github.com/awslabs/amazon-ecr-credential-helper/ecr-login/cli/docker-credential-ecr-login && \
-    docker-credential-ecr-login version
-
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
 RUN \
@@ -77,6 +71,12 @@ RUN \
     wget -qO - https://api.bintray.com/users/sobolevn/keys/gpg/public.key | apt-key add -  && \
     apt-get update && \
     apt-get install --no-install-recommends -y git-secret
+
+# https://github.com/awslabs/amazon-ecr-credential-helper
+# Required because of this: https://gitlab.com/gitlab-org/gitlab-runner/issues/1583
+#
+RUN go get -u github.com/awslabs/amazon-ecr-credential-helper/ecr-login/cli/docker-credential-ecr-login && \
+    docker-credential-ecr-login version
 
 # Clean
 RUN \
