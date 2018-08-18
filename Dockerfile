@@ -3,15 +3,21 @@ FROM ruby:2.3.7-slim-stretch
 
 ENV LANG="C.UTF-8" \
     SBT_VERSION="1.1.6" \
-    NODE_VERSION="8.11.3"
+    NODE_VERSION="8.11.3" \
+    GOPATH=$HOME/work \
+    PATH=$PATH:/usr/local/go/bin:$HOME/work/bin \
+    AWS_SDK_LOAD_CONFIG="true" \
+    AWS_REGION="eu-west-1" \
+    DOCKER_AUTH_CONFIG="{\"credsStore\":\"ecr-login\"}"
 
 RUN \
+    mkdir $HOME/work && \
     ruby -v && \
     apt-get update && \
     apt-get dist-upgrade -y && \
     apt-get install --no-install-recommends -y \
         apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https ca-certificates curl \
-        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 awscli
+        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 awscli golang-go make
 
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
@@ -50,11 +56,11 @@ RUN \
     pip install yq && \
     usermod -aG docker root
 
-# Docker Compose
-RUN \
-    curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && \
-    chmod +x /usr/local/bin/docker-compose && \
-    docker-compose --version
+# https://github.com/awslabs/amazon-ecr-credential-helper
+# Required because of this: https://gitlab.com/gitlab-org/gitlab-runner/issues/1583
+#
+RUN go get -u github.com/awslabs/amazon-ecr-credential-helper/ecr-login/cli/docker-credential-ecr-login && \
+    docker-credential-ecr-login version
 
 # Helm
 RUN \
