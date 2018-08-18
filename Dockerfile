@@ -11,8 +11,12 @@ RUN \
     apt-get dist-upgrade -y && \
     apt-get install --no-install-recommends -y \
         apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https ca-certificates curl \
-        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 python3-pip && \
-    pip3 install --upgrade awscli && \
+        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 unzip && \
+    apt-get install -y python-pip && \
+    python --version && \
+    curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip" && \
+    unzip awscli-bundle.zip && \
+    ./awscli-bundle/install -i /usr/local/aws -b /usr/local/bin/aws && \
     aws --version
 
 # sbt
@@ -48,7 +52,6 @@ RUN \
     apt-get update && \
     apt-get remove -y docker docker-engine docker.io && \
     apt-get install --no-install-recommends -y moreutils jq google-cloud-sdk kubectl docker-ce && \
-    apt-get install -y python-pip && \
     pip install yq && \
     usermod -aG docker root
 
@@ -73,7 +76,7 @@ RUN \
 
 # Clean
 RUN \
-    apt-get purge -y python-pip apt-utils && \
+    apt-get purge -y python-pip apt-utils unzip && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
