@@ -63,5 +63,10 @@ RUN \
     apt-get update && \
     apt-get install --no-install-recommends -y git-secret
 
+# AWS CLI
+RUN \
+    curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    pip install awscli
 
 CMD bash
