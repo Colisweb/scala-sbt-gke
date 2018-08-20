@@ -63,11 +63,5 @@ RUN \
     apt-get update && \
     apt-get install --no-install-recommends -y git-secret
 
-# Clean
-RUN \
-    apt-get purge -y python-pip apt-utils && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 CMD bash
