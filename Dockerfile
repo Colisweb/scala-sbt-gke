@@ -69,4 +69,8 @@ RUN \
     python get-pip.py && \
     pip install awscli
 
+# Ocaml
+RUN \
+    apt-get -y install ocaml ocaml-native-compilers camlp4-extra gcc musl-dev g++
+
 CMD bash
