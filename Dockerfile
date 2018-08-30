@@ -71,7 +71,12 @@ RUN \
 
 # Ocaml
 RUN \
-    apt-get -y install ocaml ocaml-native-compilers camlp4-extra gcc musl-dev g++ && \
-    npm install -g --save bs-platform --unsafe-perm
+    apt-get -y install opam && \
+    opam init -a && \
+    opam config env && \
+    opam update && \
+    opam switch 4.02.3+buckle-1 && \
+    opam config env && \
+    echo "export PATH=/root/.opam/4.02.3+buckle-1/bin:\$PATH" >> /root/.bashrc
 
 CMD bash
