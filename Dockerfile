@@ -34,8 +34,8 @@ RUN \
 
 # NodeJS
 RUN \
-    curl -L https://git.io/n-install | bash -s -- -y && \
-    /root/n/bin/n $NODE_VERSION && \
+    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
+    apt-get install -y nodejs && \
     node -v
 
 # Docker && Google Cloud CLI && Kubernetes CLI
@@ -71,6 +71,7 @@ RUN \
 
 # Ocaml
 RUN \
-    apt-get -y install ocaml ocaml-native-compilers camlp4-extra gcc musl-dev g++
+    apt-get -y install ocaml ocaml-native-compilers camlp4-extra gcc musl-dev g++ && \
+    npm install -g --save bs-platform --unsafe-perm
 
 CMD bash
