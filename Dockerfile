@@ -2,7 +2,7 @@
 FROM ruby:2.3.7-slim-stretch
 
 ENV LANG="C.UTF-8" \
-    SBT_VERSION="1.1.6" \
+    SBT_VERSION="1.2.3" \
     NODE_VERSION="8.11.3"
 
 RUN \
