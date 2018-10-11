@@ -46,6 +46,7 @@ RUN \
     apt-get update && \
     apt-get remove -y docker docker-engine docker.io && \
     apt-get install --no-install-recommends -y moreutils jq docker-ce && \
+    pip install yq && \
     usermod -aG docker root
 
 # Kubernetes CLI
