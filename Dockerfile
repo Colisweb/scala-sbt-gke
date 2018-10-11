@@ -3,7 +3,9 @@ FROM ruby:2.3.7-slim-stretch
 
 ENV LANG="C.UTF-8" \
     SBT_VERSION="1.1.6" \
-    NODE_VERSION="8.11.3"
+    NODE_VERSION="8.11.4" \
+    KUBECTL_VERSION="1.12.1" \
+    AWS_AUHTENTICATOR_VERSION="0.3.0"
 
 RUN \
     ruby -v && \
@@ -11,7 +13,8 @@ RUN \
     apt-get dist-upgrade -y && \
     apt-get install --no-install-recommends -y \
         apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https ca-certificates curl \
-        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2
+        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 \
+        python-dev python3-dev python-pip
 
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
@@ -23,32 +26,35 @@ RUN \
     apt-get install --no-install-recommends -y sbt && \
     sbt sbtVersion
 
-# GCloud
-## Create an environment variable for the correct distribution
-RUN \
-    export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
-    ## Add the Cloud SDK distribution URI as a package source
-    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    ## Import the Google Cloud Platform public key
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-
 # NodeJS
 RUN \
     curl -L https://git.io/n-install | bash -s -- -y && \
     /root/n/bin/n $NODE_VERSION && \
     node -v
 
-# Docker && Google Cloud CLI && Kubernetes CLI
+# AWS CLI
+RUN \
+    curl -O https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    pip install awscli --upgrade --user
+
+# Docker
 RUN \
     curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - && \
     apt-key fingerprint 0EBFCD88 && \
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable" && \
     apt-get update && \
     apt-get remove -y docker docker-engine docker.io && \
-    apt-get install --no-install-recommends -y moreutils jq google-cloud-sdk kubectl docker-ce && \
-    apt-get install -y python-pip && \
-    pip install yq && \
+    apt-get install --no-install-recommends -y moreutils jq docker-ce && \
     usermod -aG docker root
+
+# Kubernetes CLI
+RUN \
+    curl -L "https://storage.googleapis.com/kubernetes-release/release/v$KUBECTL_VERSION/bin/linux/amd64/kubectl" -o /usr/local/bin/kubectl && \
+    chmod +x /usr/local/bin/kubectl
+RUN \
+    curl -L "https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v$AWS_AUHTENTICATOR_VERSION/heptio-authenticator-aws_${AWS_AUHTENTICATOR_VERSION}_linux_amd64" -o /usr/local/bin/aws-iam-authenticator && \
+    chmod +x /usr/local/bin/aws-iam-authenticator
 
 # Helm
 RUN \
