@@ -1,5 +1,5 @@
 # ruby is hard to install because rvm doesn't work in Docker
-FROM ruby:2.3.7-slim-stretch
+FROM ruby:2.3.8-slim-stretch
 
 ENV LANG="C.UTF-8" \
     SBT_VERSION="1.1.6" \
