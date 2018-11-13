@@ -12,7 +12,8 @@ RUN \
     apt-get install --no-install-recommends -y \
         apt-utils lsb-release build-essential apt-transport-https ca-certificates curl \
         gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2 && \
-    gem install bundler && gem update bundler && bundle -v
+    gem install bundler && gem update bundler && bundle -v && \
+    gem install jbundler
 
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
