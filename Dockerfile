@@ -77,4 +77,6 @@ RUN \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+ENV PATH="$PATH:/root/.local/bin"
+
 CMD bash
