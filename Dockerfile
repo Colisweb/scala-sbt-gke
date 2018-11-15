@@ -1,5 +1,5 @@
 # ruby is hard to install because rvm doesn't work in Docker
-FROM ruby:2.3.8-slim-stretch
+FROM ruby:2.4.5-slim-stretch
 
 ENV LANG="C.UTF-8" \
     SBT_VERSION="1.1.6" \
@@ -11,7 +11,8 @@ RUN \
     apt-get dist-upgrade -y && \
     apt-get install --no-install-recommends -y \
         apt-utils openjdk-8-jdk-headless lsb-release build-essential apt-transport-https ca-certificates curl \
-        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev ruby-mysql2
+        gnupg2 software-properties-common git ssh tar wget default-libmysqlclient-dev && \
+    gem install bundler
 
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
