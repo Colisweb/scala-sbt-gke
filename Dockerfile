@@ -1,5 +1,5 @@
 # ruby is hard to install because rvm doesn't work in Docker
-FROM jruby:9.1-jdk
+FROM jruby:9.1.17.0-jdk
 
 ENV LANG="C.UTF-8" \
     SBT_VERSION="1.1.6" \
@@ -12,7 +12,7 @@ RUN \
     apt-get install --no-install-recommends -y \
         apt-utils lsb-release build-essential apt-transport-https ca-certificates curl \
         gnupg2 software-properties-common git ssh tar wget && \
-    gem install bundler jbundler && gem update bundler && bundle -v
+    gem install bundler jar-dependencies ruby-maven && gem update bundler && bundle -v
 
 # sbt
 # Taken from https://github.com/hseeberger/docker-sbt
