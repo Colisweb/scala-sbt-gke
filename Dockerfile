@@ -12,6 +12,7 @@ RUN \
     apt-get install --no-install-recommends -y \
         apt-utils lsb-release build-essential apt-transport-https ca-certificates curl \
         gnupg2 software-properties-common git ssh tar wget && \
+    gem update --system && \
     gem install bundler jar-dependencies ruby-maven && gem update bundler && bundle -v
 
 # sbt
