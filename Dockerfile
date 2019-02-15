@@ -1,8 +1,8 @@
 # ruby is hard to install because rvm doesn't work in Docker
-FROM jruby:9.2.5-jdk
+FROM jruby:9.2.6-jdk
 
 ENV LANG="C.UTF-8" \
-    SBT_VERSION="1.1.6" \
+    SBT_VERSION="1.2.8" \
     NODE_VERSION="8.11.3"
 
 RUN \
