@@ -1,5 +1,5 @@
 # ruby is hard to install because rvm doesn't work in Docker
-FROM guizmaii/adoptjruby:jdk8u202-b08_openj9-0.12.1-slim-9.2.6.0
+FROM guizmaii/adoptjruby:adoptopenjdk-11.0.2.9_openj9-0.12.1-slim-9.2.6.0
 
 ENV LANG="C.UTF-8" \
     SBT_VERSION="1.2.8" \
