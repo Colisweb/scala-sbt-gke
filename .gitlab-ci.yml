@@ -1,0 +1,18 @@
+publish docker image:
+  image: docker:19.03.1
+  only:
+    refs:
+      - master
+  script:
+    - docker build -t colisweb/scala-sbt-gke:adoptopenjdk-11.0.3-slim-9.2.8.0 .
+    - docker push colisweb/scala-sbt-gke:adoptopenjdk-11.0.3-slim-9.2.8.0
+
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+  before_script:
+    - apk add bash gnupg
+    - bash -c 'gpg --import  <(echo "$GITLAB_PGP_PRIVATE_KEY")'
+    - bash -c "source <(gpg -q --decrypt docker_login.sh.secret)"
+
