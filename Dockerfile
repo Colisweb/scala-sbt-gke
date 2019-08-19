@@ -1,5 +1,5 @@
 # ruby is hard to install because rvm doesn't work in Docker
-FROM guizmaii/adoptjruby:adoptopenjdk8u202-b08-slim-9.2.6.0
+FROM colisweb/adoptjruby:adoptopenjdk-11.0.3-slim-9.2.8.0
 
 ENV LANG="C.UTF-8" \
     SBT_VERSION="1.2.8" \
