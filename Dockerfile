@@ -1,9 +1,9 @@
 # ruby is hard to install because rvm doesn't work in Docker
-FROM colisweb/adoptjruby:adoptopenjdk-11.0.3-slim-9.2.8.0
+FROM colisweb/adoptjruby:adoptopenjdkjdk11.0.5-slim-hotspot-9.2.8.0
 
 ENV LANG="C.UTF-8" \
-    SBT_VERSION="1.2.8" \
-    NODE_VERSION="8.11.3"
+    SBT_VERSION="1.3.3" \
+    NODE_VERSION="8.16.2"
 
 RUN \
     ruby -v && \
@@ -25,29 +25,25 @@ RUN \
     apt-get install --no-install-recommends -y sbt && \
     sbt sbtVersion
 
-# GCloud
-## Create an environment variable for the correct distribution
-RUN \
-    export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
-    ## Add the Cloud SDK distribution URI as a package source
-    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    ## Import the Google Cloud Platform public key
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
-
 # NodeJS
 RUN \
     curl -L https://git.io/n-install | bash -s -- -y && \
     /root/n/bin/n $NODE_VERSION && \
     node -v
 
-# Docker && Google Cloud CLI && Kubernetes CLI
+# Docker && Kubernetes CLI
 RUN \
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
+    export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
+    ## Add the Cloud SDK distribution URI as a package source
+    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    ## Import the Google Cloud Platform public key
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
     apt-key fingerprint 0EBFCD88 && \
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
     apt-get update && \
     apt-get remove -y docker docker-engine docker.io containerd runc && \
-    apt-get install --no-install-recommends -y moreutils jq google-cloud-sdk kubectl docker-ce docker-ce-cli containerd.io && \
+    apt-get install --no-install-recommends -y moreutils jq kubectl docker-ce docker-ce-cli containerd.io && \
     apt-get install -y python-pip && \
     pip install yq && \
     usermod -aG docker root
