@@ -25,20 +25,24 @@ RUN \
     apt-get install --no-install-recommends -y sbt && \
     sbt sbtVersion
 
+# GCloud
+## Create an environment variable for the correct distribution
+RUN \
+    export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
+    ## Add the Cloud SDK distribution URI as a package source
+    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    ## Import the Google Cloud Platform public key
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+
 # NodeJS
 RUN \
     curl -L https://git.io/n-install | bash -s -- -y && \
     /root/n/bin/n $NODE_VERSION && \
     node -v
 
-# Docker && Kubernetes CLI
+# Docker && Google Cloud CLI && Kubernetes CLI
 RUN \
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
-    export CLOUD_SDK_REPO="cloud-sdk-$(lsb_release -c -s)" && \
-    ## Add the Cloud SDK distribution URI as a package source
-    echo "deb http://packages.cloud.google.com/apt $CLOUD_SDK_REPO main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-    ## Import the Google Cloud Platform public key
-    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - \
     apt-key fingerprint 0EBFCD88 && \
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
     apt-get update && \
