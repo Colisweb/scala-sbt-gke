@@ -2,7 +2,7 @@
 FROM colisweb/adoptjruby:adoptopenjdkjdk11.0.5-slim-hotspot-9.2.8.0
 
 ENV LANG="C.UTF-8" \
-    SBT_VERSION="1.3.3" \
+    SBT_VERSION="1.3.5" \
     NODE_VERSION="8.16.2"
 
 RUN \
